@@ -7,6 +7,9 @@ let exchangeRatio = {
 };
 try {
     exchangeRatio = require(join(process.cwd(), "./options/exchangeRate.json"));
+    if (!exchangeRatio.data) {
+        getNewRatio();
+    }
 } catch (err) {
     console.log("[汇率转换] 请在配置文件中填写access_key");
     fs.writeFileSync(join(process.cwd(), "./options/exchangeRate.json"), JSON.stringify(exchangeRatio, null, 4));
