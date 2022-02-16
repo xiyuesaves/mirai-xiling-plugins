@@ -1,0 +1,21 @@
+{
+  "name": "exchangerate",
+  "version": "1.0.0",
+  "description": "xiling-bot 汇率转换插件",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xiling-box",
+    "汇率"
+  ],
+  "author": "xiyue",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "axios": "^0.26.0"
+  }
+}
