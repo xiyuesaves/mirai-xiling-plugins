@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/blackList",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "xiling-bot的黑名单插件",
   "main": "index.js",
   "scripts": {
