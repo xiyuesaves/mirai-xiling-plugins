@@ -1,0 +1,20 @@
+{
+  "name": "@xiling-bot/replace",
+  "version": "1.0.0",
+  "description": "xiling-bot测复读机插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xiling-bot",
+    "复读机插件"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiyuesaves/mirai-xiling-plugins.git"
+  },
+  "author": "xiyue",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://github.com/xiyuesaves/mirai-xiling-plugins"
+}
