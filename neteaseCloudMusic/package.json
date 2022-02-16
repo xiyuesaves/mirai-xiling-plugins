@@ -1,0 +1,24 @@
+{
+  "name": "@xiling-bot/neteasecloudmusic",
+  "version": "1.0.0",
+  "description": "xiling-bot的网易云音乐点歌插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xiling-bot",
+    "点歌插件"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiyuesaves/mirai-xiling-plugins.git"
+  },
+  "author": "xiyue",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://github.com/xiyuesaves/mirai-xiling-plugins",
+  "dependencies": {
+    "NeteaseCloudMusicApi": "^4.5.7",
+    "request": "^2.88.2"
+  }
+}
