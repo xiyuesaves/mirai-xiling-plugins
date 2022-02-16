@@ -1,0 +1,19 @@
+{
+  "name": "@xiling-bot/blackList",
+  "version": "1.0.0",
+  "description": "xiling-bot的黑名单插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiyuesaves/mirai-xiling-plugins.git"
+  },
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://github.com/xiyuesaves/mirai-xiling-plugins",
+  "dependencies": {
+    "better-sqlite3": "^7.4.1"
+  }
+}
