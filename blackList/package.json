@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/xiyuesaves/mirai-xiling-plugins.git"
   },
-  "author": "",
+  "author": "xiyue",
   "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/xiyuesaves/mirai-xiling-plugins",
   "dependencies": {
