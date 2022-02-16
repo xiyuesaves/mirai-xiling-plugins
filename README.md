@@ -1,5 +1,5 @@
 # mirai-xiling-plugins
-#### mirai-xiling 插件列表
+#### [mirai-xiling](https://github.com/xiyuesaves/mirai-xiling) 插件列表
 
 - blackList	-	黑名单插件
 - choose	-	选择插件
