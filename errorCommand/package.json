@@ -1,5 +1,5 @@
 {
-  "name": "@xiling-bot/errorCommand",
+  "name": "@xiling-bot/errorcommand",
   "version": "1.0.0",
   "description": "xiling-bot的未知命令处理插件",
   "main": "index.js",

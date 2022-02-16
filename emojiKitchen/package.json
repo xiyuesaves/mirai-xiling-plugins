@@ -1,5 +1,5 @@
 {
-  "name": "@xiling-bot/emojiKitchen",
+  "name": "@xiling-bot/emojikitchen",
   "version": "1.0.0",
   "description": "xiling-bot的emoji合成插件",
   "main": "index.js",

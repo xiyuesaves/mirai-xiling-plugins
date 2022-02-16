@@ -1,5 +1,5 @@
 {
-  "name": "@xiling-bot/blackList",
+  "name": "@xiling-bot/blacklist",
   "version": "0.0.1",
   "description": "xiling-bot的黑名单插件",
   "main": "index.js",

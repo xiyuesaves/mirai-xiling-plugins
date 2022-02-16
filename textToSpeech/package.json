@@ -1,5 +1,5 @@
 {
-  "name": "@xiling-bot/textToSpeech",
+  "name": "@xiling-bot/texttospeech",
   "version": "1.0.0",
   "description": "xiling-bot的文本转语音插件",
   "main": "index.js",
