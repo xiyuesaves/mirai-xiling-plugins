@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/texttospeech",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "xiling-bot的文本转语音插件",
   "main": "index.js",
   "scripts": {

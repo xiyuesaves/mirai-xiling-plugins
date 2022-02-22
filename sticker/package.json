@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/sticker",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "xiling-bot的贴图表情生成插件",
   "main": "index.js",
   "scripts": {

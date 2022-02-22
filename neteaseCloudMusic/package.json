@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/neteasecloudmusic",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "xiling-bot的网易云音乐点歌插件",
   "main": "index.js",
   "scripts": {

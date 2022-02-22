@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/choose",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "xiling-bot的选择插件",
   "main": "index.js",
   "scripts": {
