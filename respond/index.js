@@ -46,8 +46,8 @@ const respond = {
                 res.json(dbSearch);
             });
             httpServer.use("/reply_image/", express.static('reply_image')); // 指定静态文件路径
-            httpServer.use("/status", express.static('http_index/status')); // 指定静态文件路径
-            httpServer.use("/", express.static('./http_index')); // 指定静态文件路径
+            httpServer.use("/status", express.static(join(__dirname, '/http_index/status'))); // 指定静态文件路径
+            httpServer.use("/", express.static(join(__dirname, '/http_index'))); // 指定静态文件路径
             httpServer.listen(Pluginoption.respondPort, function() {
                 let port = this.address().port;
                 console.log(`[关键词回应] 回应列表服务已启动 - [${port}]`);
@@ -121,7 +121,7 @@ const respond = {
                 }
                 // 添加图片回应
                 for (var i = 0; i < imageUrlArr.length; i++) {
-                    let content = await downloadImage(imageUrlArr[i].url, `${senderId}-${imageUrlArr[i].imageId}`, join(process.cwd(), "./reply_image"));
+                    let content = await downloadImage(imageUrlArr[i].url, `${senderId}-${imageUrlArr[i].imageId}`, "./reply_image");
                     console.log("[关键词回应] 文件名称", content);
                     db.prepare("INSERT INTO reply_text_list VALUES (?,?,?,?,?,?)").run(replyListId, "Image", content, memberName, groupId, 0);
                 }
