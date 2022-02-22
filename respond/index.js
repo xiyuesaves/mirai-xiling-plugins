@@ -47,7 +47,7 @@ const respond = {
             });
             httpServer.use("/reply_image/", express.static('reply_image')); // 指定静态文件路径
             httpServer.use("/status", express.static('http_index/status')); // 指定静态文件路径
-            httpServer.use("/", express.static('http_index')); // 指定静态文件路径
+            httpServer.use("/", express.static('./http_index')); // 指定静态文件路径
             httpServer.listen(Pluginoption.respondPort, function() {
                 let port = this.address().port;
                 console.log(`[关键词回应] 回应列表服务已启动 - [${port}]`);

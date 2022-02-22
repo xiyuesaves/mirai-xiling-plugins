@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>回应列表</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script> -->
+    <script type="text/javascript" src="/status/js/axios.min.js"></script>
+    <script type="text/javascript" src="/status/js/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="status/css/index.css">
+    <link rel="stylesheet" type="text/css" href="status/css/xp.css">
+</head>
+
+<body>
+	<div class="window main-box">
+      <div class="title-bar">
+        <div class="title-bar-text">
+          回应列表
+        </div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body">
+    <div id="app">
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">触发词</th>
+                    <th width="60%">回应内容</th>
+                    <th width="20%">触发次数</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in items" :key="item.key">
+                    <td><p>{{item.key}}</p></td>
+                    <td>
+                        <div v-for="(reps, index) in item.content" :class="item.type[index] === 'Image' ? 'img_div' : ''" :key="reps.content">
+                            <img v-if="item.type[index] === 'Image'" :src="reps">
+                            <p v-else>{{reps}}</p>
+                        </div>
+                    </td>
+                    <td>
+                    	<p v-for="(count, index) in item.counts" :style="item.type[index] === 'Image' ? 'line-height: 100px' : ''">
+                    		{{count}}
+                    	</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <section class="field-row" style="justify-content: flex-end">
+          <button>OK</button>
+          <button>Cancel</button>
+        </section>
+      </div>
+    </div>
+    <p style="text-align: center; color:#ffffff">样式来自<a href="https://botoxparty.github.io/XP.css/">XP.css</a></p>
+</body>
+
+</html>
