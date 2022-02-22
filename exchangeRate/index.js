@@ -7,7 +7,7 @@ let exchangeRatio = {
 };
 try {
     exchangeRatio = require(join(process.cwd(), "./options/exchangeRate.json"));
-    if (!exchangeRatio.data) {
+    if (!exchangeRatio.date) {
         getNewRatio();
     }
 } catch (err) {
