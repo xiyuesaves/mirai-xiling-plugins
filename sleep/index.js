@@ -108,7 +108,7 @@ const sleep = {
 				msg.quoteReply([{ type: "Plain", text: `你醒了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
 				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
 			}
-			return true;
+			return false;
 		}
 	}
 }
