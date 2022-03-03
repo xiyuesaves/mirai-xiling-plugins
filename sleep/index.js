@@ -66,12 +66,24 @@ const sleep = {
 				userName = msg.sender.memberName,
 				startTime = new Date().getTime();
 			if (hasSleep(groupId, userId)) {
-				let bed = db.prepare("DELETE FROM sleep WHERE userId = ?").run(userId);
+				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
 				msg.reply([{ type: "Plain", text: "你起床了" }], msg);
 			} else {
 				msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
 			}
 		}
-	}]
+	}],
+	passive: {
+		name: "自动起床",
+		exce(msg) {
+			let groupId = msg.sender.group.id,
+				userId = msg.sender.id,
+				userName = msg.sender.memberName;
+			if (hasSleep(groupId, userId)) {
+				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
+				msg.quoteReply([{ type: "Plain", text: "你起床了" }], msg);
+			}
+		}
+	}
 }
 module.exports = sleep;
