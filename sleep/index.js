@@ -97,7 +97,7 @@ const sleep = {
 			}
 		}
 	}],
-	passive: {
+	priority: {
 		name: "自动起床",
 		exce(msg) {
 			let groupId = msg.sender.group.id,
