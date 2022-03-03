@@ -90,8 +90,10 @@ const sleep = {
 				userName = msg.sender.memberName,
 				thisTime = new Date().getTime();
 			if (hasSleep(groupId, userId)) {
-				msg.reply([{ type: "Plain", text: `你起床了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
-				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
+				setTimeout(() => {
+					msg.quoteReply([{ type: "Plain", text: `你醒了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
+					let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
+				}, 1000)
 			} else {
 				msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
 			}
@@ -105,8 +107,10 @@ const sleep = {
 				userName = msg.sender.memberName,
 				thisTime = new Date().getTime();
 			if (hasSleep(groupId, userId)) {
-				msg.quoteReply([{ type: "Plain", text: `你醒了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
-				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
+				setTimeout(() => {
+					msg.quoteReply([{ type: "Plain", text: `你醒了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
+					let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
+				}, 1000)
 			}
 			return false;
 		}
