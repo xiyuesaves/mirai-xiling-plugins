@@ -14,3 +14,4 @@
 - sticker	-	贴图生成
 - textToSpeech	-	文本转语音
 - wordcloud	-	词云
+- sleep	-	群睡觉
