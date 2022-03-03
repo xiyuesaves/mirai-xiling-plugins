@@ -83,6 +83,7 @@ const sleep = {
 				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
 				msg.quoteReply([{ type: "Plain", text: "你起床了" }], msg);
 			}
+			return true;
 		}
 	}
 }
