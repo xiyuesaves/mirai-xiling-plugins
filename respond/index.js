@@ -31,7 +31,7 @@ const respond = {
         }
 
         let app = express();
-        app.use("/reply_image/", express.static('reply_image')); // 指定静态文件路径
+        app.use("/reply_image/", express.static(join(process.cwd(), 'reply_image'))); // 指定静态文件路径
         app.listen(Pluginoption.imagePort, function() {
             let port = this.address().port;
             console.log(`[关键词回应] 本地图片服务已启动 - [${port}]`);
@@ -45,9 +45,9 @@ const respond = {
                 let dbSearch = db.prepare("SELECT reply_type,content,count,key FROM reply_list a,reply_text_list b WHERE a.reply_list_id = b.reply_list_id AND a.group_id = ?").all(getGroupId);
                 res.json(dbSearch);
             });
-            httpServer.use("/reply_image/", express.static('reply_image')); // 指定静态文件路径
-            httpServer.use("/status", express.static(join(__dirname, '/http_index/status'))); // 指定静态文件路径
-            httpServer.use("/", express.static(join(__dirname, '/http_index'))); // 指定静态文件路径
+            httpServer.use("/reply_image/", express.static(join(process.cwd(), 'reply_image'))); // 指定静态文件路径
+            httpServer.use("/status", express.static(join(__dirname,'http_index/status'))); // 指定静态文件路径
+            httpServer.use("/", express.static(join(__dirname,'http_index'))); // 指定静态文件路径
             httpServer.listen(Pluginoption.respondPort, function() {
                 let port = this.address().port;
                 console.log(`[关键词回应] 回应列表服务已启动 - [${port}]`);
@@ -121,9 +121,11 @@ const respond = {
                 }
                 // 添加图片回应
                 for (var i = 0; i < imageUrlArr.length; i++) {
-                    let content = await downloadImage(imageUrlArr[i].url, `${senderId}-${imageUrlArr[i].imageId}`, "./reply_image");
+                    let content = await downloadImage(imageUrlArr[i].url, `${senderId}-${imageUrlArr[i].imageId}`, join(process.cwd(), "./reply_image")),
+                        path = `./reply_image/${senderId}-${imageUrlArr[i].imageId}`;
                     console.log("[关键词回应] 文件名称", content);
-                    db.prepare("INSERT INTO reply_text_list VALUES (?,?,?,?,?,?)").run(replyListId, "Image", content, memberName, groupId, 0);
+                    console.log(db.prepare("INSERT INTO reply_text_list VALUES (?,?,?,?,?,?)").run(replyListId, "Image", path, memberName, groupId, 0))
+                    ;
                 }
                 msg.reply([{ type: "Plain", text: returnMsg }], msg);
             }
@@ -175,10 +177,11 @@ const respond = {
                         msg.reply([{ type: 'Plain', text: replyContent.content }], msg);
                         return false;
                     } else {
-                        console.log("[关键词回应] 回应图片路径", `./reply_image/${replyContent.content.substring(14)}`);
+                        console.log("[关键词回应] 回应图片路径", join(process.cwd(), replyContent.content));
                         try {
-                            fs.accessSync(`./reply_image/${replyContent.content.substring(14)}`, fs.constants.F_OK);
-                            let url = `http://127.0.0.1:81/reply_image/${replyContent.content.substring(14)}`;
+                            fs.accessSync(join(process.cwd(), replyContent.content), fs.constants.F_OK);
+                            let url = `http://127.0.0.1:${Pluginoption.imagePort}/reply_image/${replyContent.content.substring(14)}`;
+                            console.log("[关键词回应] url",url,)
                             msg.reply([{ type: 'Image', imageId: null, url: url, path: null }], msg);
                             return false;
                         } catch (err) {
