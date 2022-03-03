@@ -26,6 +26,30 @@ function getStatus(time) {
 	}
 }
 
+function getTime(seconds) {
+	let ss = parseInt(seconds / 1000) // 秒
+	let mm = 0 // 分
+	let hh = 0 // 小时
+	if (ss > 60) {
+		mm = parseInt(ss / 60)
+		ss = parseInt(ss % 60)
+	}
+	if (mm > 60) {
+		hh = parseInt(mm / 60)
+		mm = parseInt(mm % 60)
+	}
+	let result = ('00' + parseInt(ss)).slice(-2) + '秒'
+	if (mm > 0) {
+		result = ('00' + parseInt(mm)).slice(-2) + '分:' + result
+	} else {
+		result = '00:' + result
+	}
+	if (hh > 0) {
+		result = ('00' + parseInt(hh)).slice(-2) + '时:' + result
+	}
+	return result
+}
+
 const sleep = {
 	name: "群睡觉",
 	mounted() {
@@ -64,10 +88,10 @@ const sleep = {
 			let groupId = msg.sender.group.id,
 				userId = msg.sender.id,
 				userName = msg.sender.memberName,
-				startTime = new Date().getTime();
+				thisTime = new Date().getTime();
 			if (hasSleep(groupId, userId)) {
+				msg.reply([{ type: "Plain", text: `你起床了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
 				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
-				msg.reply([{ type: "Plain", text: "你起床了" }], msg);
 			} else {
 				msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
 			}
@@ -78,10 +102,11 @@ const sleep = {
 		exce(msg) {
 			let groupId = msg.sender.group.id,
 				userId = msg.sender.id,
-				userName = msg.sender.memberName;
+				userName = msg.sender.memberName,
+				thisTime = new Date().getTime();
 			if (hasSleep(groupId, userId)) {
+				msg.reply([{ type: "Plain", text: `你醒了,睡了${getTime(thisTime - hasSleep(groupId, userId).startTime)}` }], msg);
 				let bed = db.prepare("DELETE FROM sleep WHERE groupId = ? AND userId = ? ").run(groupId, userId);
-				msg.quoteReply([{ type: "Plain", text: "你起床了" }], msg);
 			}
 			return true;
 		}
