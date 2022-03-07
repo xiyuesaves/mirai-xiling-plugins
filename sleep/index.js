@@ -111,20 +111,6 @@ const sleep = {
 				}
 			}
 		},
-		// {
-		// 	name: "起床",
-		// 	exce(msg) {
-		// 		let groupId = msg.sender.group.id,
-		// 			userId = msg.sender.id,
-		// 			userName = msg.sender.memberName,
-		// 			thisTime = new Date().getTime();
-		// 		if (hasSleep(groupId, userId)) {
-		// 			wakeUp();
-		// 		} else {
-		// 			msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
-		// 		}
-		// 	}
-		// }, 
 		{
 			name: "睡觉排行",
 			exce(msg) {
