@@ -1,4 +1,5 @@
-const db = require("better-sqlite3")("database/sleep.db");
+const { join } = require("path");
+const db = require("better-sqlite3")(join(process.cwd(), "database/sleep.db"));
 
 function hasSleep(groupId, userId) {
 	return db.prepare("SELECT * FROM sleep WHERE groupId = ? AND userId = ?").get(groupId, userId);
