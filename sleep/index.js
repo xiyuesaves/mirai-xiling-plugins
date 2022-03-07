@@ -16,13 +16,13 @@ function getStatus(time) {
 	let thisTime = new Date(),
 		sleepTime = new Date(time);
 	if (thisTime - sleepTime > 6 * 60 * 60 * 1000) {
-		return "Zz...(¦3[▓^]";
+		return "(¦3[▓^]";
 	} else if (thisTime - sleepTime > 2 * 60 * 60 * 1000) {
-		return "    (¦3[▓▓]";
+		return "(¦3[▓▓]";
 	} else if (thisTime - sleepTime > 1 * 60 * 60 * 1000) {
-		return "    (:3[▓▓]";
+		return "(:3[▓▓]";
 	} else {
-		return "    (:3ꇤ[▓▓]";
+		return "(:3ꇤ[▓▓]";
 	}
 }
 
@@ -61,10 +61,20 @@ function wakeUp(msg) {
 	let totalSleep = db.prepare("SELECT * FROM sleep_ranking WHERE groupId = ? AND userId = ?").get(groupId, userId);
 	if (totalSleep) {
 		let totalTime = totalSleep.sleepTime + sleepTime;
+		console.log(totalTime, groupId, userId)
 		db.prepare("UPDATE sleep_ranking SET sleepTime = ? WHERE groupId = ? AND userId = ?").run(totalTime, groupId, userId);
 	} else {
+		console.log(groupId, userId, userName, sleepTime)
 		db.prepare("INSERT INTO sleep_ranking VALUES (?,?,?,?)").run(groupId, userId, userName, sleepTime);
 	}
+}
+
+function getMedal(index) {
+	let medal = ["🐷", "🥈", "🥉"];
+	if (medal[index]) {
+		return medal[index];
+	}
+	return index + 1;
 }
 
 const sleep = {
@@ -72,62 +82,70 @@ const sleep = {
 	mounted() {
 		// 初始化数据库
 		db.prepare("CREATE TABLE IF NOT EXISTS sleep(\"groupId\" integer NOT NULL,\"userId\" integer NOT NULL,\"userName\" text NOT NULL,\"startTime\" integer NOT NULL)").run();
-		db.prepare("CREATE TABLE IF NOT EXISTS sleep_ranking(\"groupId\" integer NOT NULL,\"userId\" integer NOT NULL,\"userName\" text NOT NULL,\"sleepTime\" integer NOT NULL, PRIMARY KEY (\"userId\"))").run();
+		db.prepare("CREATE TABLE IF NOT EXISTS sleep_ranking(\"groupId\" integer NOT NULL,\"userId\" integer NOT NULL,\"userName\" text NOT NULL,\"sleepTime\" integer NOT NULL)").run();
 	},
 	command: [{
-		name: "床",
-		exce(msg) {
-			let groupId = msg.sender.group.id,
-				bed = db.prepare("SELECT * FROM sleep WHERE groupId = ?").all(groupId);
-			if (bed.length) {
-				let text = getBed(bed);
+			name: "床",
+			exce(msg) {
+				let groupId = msg.sender.group.id,
+					bed = db.prepare("SELECT * FROM sleep WHERE groupId = ?").all(groupId);
+				if (bed.length) {
+					let text = getBed(bed);
+					msg.reply([{ type: "Plain", text: text }], msg);
+				} else {
+					msg.reply([{ type: "Plain", text: "没有人在床上" }], msg);
+				}
+			}
+		}, {
+			name: "睡觉",
+			exce(msg) {
+				let groupId = msg.sender.group.id,
+					userId = msg.sender.id,
+					userName = msg.sender.memberName,
+					startTime = new Date().getTime();
+				if (!hasSleep(groupId, userId)) {
+					let bed = db.prepare("INSERT INTO sleep VALUES (?,?,?,?)").run(groupId, userId, userName, startTime);
+					msg.reply([{ type: "Plain", text: "你睡下了" }], msg);
+				} else {
+					msg.reply([{ type: "Plain", text: "你已经睡下了" }], msg);
+				}
+			}
+		},
+		// {
+		// 	name: "起床",
+		// 	exce(msg) {
+		// 		let groupId = msg.sender.group.id,
+		// 			userId = msg.sender.id,
+		// 			userName = msg.sender.memberName,
+		// 			thisTime = new Date().getTime();
+		// 		if (hasSleep(groupId, userId)) {
+		// 			wakeUp();
+		// 		} else {
+		// 			msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
+		// 		}
+		// 	}
+		// }, 
+		{
+			name: "睡觉排行",
+			exce(msg) {
+				let groupId = msg.sender.group.id,
+					ranking = db.prepare("SELECT * FROM sleep_ranking WHERE groupId = ?").all(groupId);
+				ranking.sort((da, db) => db.sleepTime - da.sleepTime);
+				let text = "猪猪排行\n";
+				// 默认只展示前10名和自己的排位
+				let showNum = ranking.length > 10 ? 10 : ranking.length;
+				for (let i = 0; i < showNum; i++) {
+					text += `${getMedal(i)} - ${ranking[i].userName} [${getTime(ranking[i].sleepTime)}]\n`;
+				}
+				let sort = ranking.findIndex(el => el.userId === msg.sender.id);
+				if (sort > showNum) {
+					text += "...\n";
+					text += `${getMedal(sort)} - ${ranking[sort].userName} [${getTime(ranking[sort].sleepTime)}]`;
+				}
 				msg.reply([{ type: "Plain", text: text }], msg);
-			} else {
-				msg.reply([{ type: "Plain", text: "没有人在床上" }], msg);
 			}
 		}
-	}, {
-		name: "睡觉",
-		exce(msg) {
-			let groupId = msg.sender.group.id,
-				userId = msg.sender.id,
-				userName = msg.sender.memberName,
-				startTime = new Date().getTime();
-			if (!hasSleep(groupId, userId)) {
-				let bed = db.prepare("INSERT INTO sleep VALUES (?,?,?,?)").run(groupId, userId, userName, startTime);
-				msg.reply([{ type: "Plain", text: "你睡下了" }], msg);
-			} else {
-				msg.reply([{ type: "Plain", text: "你已经睡下了" }], msg);
-			}
-		}
-	}, 
-	// {
-	// 	name: "起床",
-	// 	exce(msg) {
-	// 		let groupId = msg.sender.group.id,
-	// 			userId = msg.sender.id,
-	// 			userName = msg.sender.memberName,
-	// 			thisTime = new Date().getTime();
-	// 		if (hasSleep(groupId, userId)) {
-	// 			wakeUp();
-	// 		} else {
-	// 			msg.reply([{ type: "Plain", text: "你还没睡" }], msg);
-	// 		}
-	// 	}
-	// }, 
-	{
-		name: "睡觉排行",
-		exce(msg) {
-			let groupId = msg.sender.group.id,
-				ranking = db.prepare("SELECT * FROM sleep_ranking WHERE groupId = ?").all(groupId);
-			ranking.sort((da, db) => db.sleepTime - da.sleepTime);
-			let text = "猪猪排行\n";
-			ranking.forEach((el, index) => {
-				text += `${index + 1} - ${el.userName} [${getTime(el.sleepTime)}]\n`;
-			})
-			msg.reply([{ type: "Plain", text: text }], msg);
-		}
-	}],
+	],
 	priority: {
 		name: "自动起床",
 		exce(msg) {
