@@ -2,7 +2,7 @@ const express = require('express'); // http服务器,处理图片链接请求
 const downloadImage = require('./lib/downloadImage.js'); // 下载器封装
 const { join } = require('path');
 const fs = require('fs'); //文件读写
-const db = require("better-sqlite3")(join(__dirname, 'respond.db')); // 数据库
+const db = require("better-sqlite3")(join(process.cwd(), "database/respond.db")); // 数据库
 
 let Pluginoption = {
         imagePort: 81,
