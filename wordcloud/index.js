@@ -3,7 +3,7 @@ const chineseColor = require("./lib/chineseColor");
 const nodejieba = require("nodejieba");
 const canvas = require("canvas");
 const { join } = require('path');
-const db = require("better-sqlite3")(join(__dirname,'wordcloud.db'));
+const db = require("better-sqlite3")(join(process.cwd(), "database/wordcloud.db"));
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
 const fontList = [
