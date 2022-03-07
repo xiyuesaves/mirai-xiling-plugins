@@ -1,6 +1,6 @@
 // 黑名单插件
 const { join } = require("path");
-const db = require("better-sqlite3")(join(__dirname, 'blackList.db'));
+const db = require("better-sqlite3")(join(process.cwd(), "database/blackList.db"));
 let option = null;
 
 const blackList = {
