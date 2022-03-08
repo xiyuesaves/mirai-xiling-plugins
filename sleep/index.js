@@ -85,7 +85,7 @@ function cleanBed(msg) {
 		groupBed = db.prepare("SELECT * FROM sleep WHERE groupId = ?").all(groupId);
 	groupBed.forEach(el => {
 		if (thisTime - el.startTime > maxSleepTime && el.startTime !== 0) { // 开始睡觉时间为0则代表已经被丢下床了不用再丢一次
-			db.prepare("UPDATE sleep SET startTime = ? WHERE groupId = ? AND userId = ?").run(0, groupId, userId); // 设置开始时间为不可能的数值用于判断用户状态
+			db.prepare("UPDATE sleep SET startTime = ? WHERE groupId = ? AND userId = ?").run(0, groupId, el.userId); // 设置开始时间为不可能的数值用于判断用户状态
 			let totalSleep = db.prepare("SELECT * FROM sleep_ranking WHERE groupId = ? AND userId = ?").get(groupId, el.userId);
 			if (totalSleep) {
 				let totalTime = totalSleep.sleepTime + maxSleepTime;
