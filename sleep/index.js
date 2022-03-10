@@ -50,7 +50,12 @@ function getTime(seconds) {
 		result = '00:' + result;
 	}
 	if (hh > 0) {
-		result = ('00' + parseInt(hh)).slice(-2) + '时' + result;
+		hh = hh.toString();
+		if (hh.length >= 3) {
+			result = hh + '时' + result;
+		} else {
+			result = ('00' + parseInt(hh)).slice(-2) + '时' + result;
+		}
 	}
 	return result;
 }
