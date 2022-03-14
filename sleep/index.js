@@ -1,5 +1,6 @@
 const { join } = require("path");
 const db = require("better-sqlite3")(join(process.cwd(), "database/sleep.db"));
+let onWeak = [];
 
 function getSleep(groupId, userId) {
 	return db.prepare("SELECT * FROM sleep WHERE groupId = ? AND userId = ?").get(groupId, userId);
@@ -66,6 +67,7 @@ function wakeUp(msg) {
 		userName = msg.sender.memberName,
 		thisTime = new Date().getTime(),
 		sleepTime = thisTime - getSleep(groupId, userId).startTime;
+	onWeak.push({ "id": msg.sender.id, "weakTime": thisTime });
 	if (thisTime === sleepTime) {
 		msg.reply([{ type: "At", target: msg.sender.id }, { type: "Plain", text: `你因为睡得太久被踹下床了` }], msg);
 	} else {
@@ -73,10 +75,10 @@ function wakeUp(msg) {
 		let totalSleep = db.prepare("SELECT * FROM sleep_ranking WHERE groupId = ? AND userId = ?").get(groupId, userId);
 		if (totalSleep) {
 			let totalTime = totalSleep.sleepTime + sleepTime;
-			console.log(totalTime, groupId, userId);
+			// console.log(totalTime, groupId, userId);
 			db.prepare("UPDATE sleep_ranking SET sleepTime = ? WHERE groupId = ? AND userId = ?").run(totalTime, groupId, userId);
 		} else {
-			console.log(groupId, userId, userName, sleepTime);
+			// console.log(groupId, userId, userName, sleepTime);
 			db.prepare("INSERT INTO sleep_ranking VALUES (?,?,?,?)").run(groupId, userId, userName, sleepTime);
 		}
 	}
@@ -84,7 +86,8 @@ function wakeUp(msg) {
 }
 
 function cleanBed(msg) {
-	let maxSleepTime = 12 * 60 * 60 * 1000, // 一次性最多睡12小时
+	let maxSleepTime = 24 * 60 * 60 * 1000, // 一次性最多睡24小时
+		sleepWaiting = 2 * 60 * 1000, // 再次睡下前需要等待一定时间
 		groupId = msg.sender.group.id,
 		thisTime = new Date().getTime(),
 		groupBed = db.prepare("SELECT * FROM sleep WHERE groupId = ?").all(groupId);
@@ -99,7 +102,8 @@ function cleanBed(msg) {
 				db.prepare("INSERT INTO sleep_ranking VALUES (?,?,?,?)").run(groupId, el.userId, el.userName, maxSleepTime);
 			}
 		}
-	})
+	});
+	onWeak = onWeak.filter(el => thisTime - el.weakTime < sleepWaiting);
 }
 
 function getMedal(index) {
@@ -134,12 +138,16 @@ const sleep = {
 			name: "睡觉",
 			exce(msg) {
 				cleanBed(msg);
-				let groupId = msg.sender.group.id,
-					userId = msg.sender.id,
-					userName = msg.sender.memberName,
-					startTime = new Date().getTime();
-				let bed = db.prepare("INSERT INTO sleep VALUES (?,?,?,?)").run(groupId, userId, userName, startTime);
-				msg.reply([{ type: "Plain", text: "你睡下了" }], msg);
+				if (!onWeak.find((el) => el.id === msg.sender.id)) {
+					let groupId = msg.sender.group.id,
+						userId = msg.sender.id,
+						userName = msg.sender.memberName,
+						startTime = new Date().getTime();
+					let bed = db.prepare("INSERT INTO sleep VALUES (?,?,?,?)").run(groupId, userId, userName, startTime);
+					msg.reply([{ type: "Plain", text: "你睡下了" }], msg);
+				} else {
+					msg.reply([{ type: "Plain", text: "你才刚睡醒，等会再睡吧" }], msg);
+				}
 			}
 		},
 		{
