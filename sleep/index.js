@@ -86,8 +86,12 @@ function wakeUp(msg) {
 }
 
 function cleanBed(msg) {
+<<<<<<< HEAD
 	let maxSleepTime = 24 * 60 * 60 * 1000, // 一次性最多睡24小时
 		sleepWaiting = 2 * 60 * 1000, // 再次睡下前需要等待一定时间
+=======
+	let maxSleepTime = 24 * 60 * 60 * 1000, // 一次性最多睡12小时
+>>>>>>> origin/main
 		groupId = msg.sender.group.id,
 		thisTime = new Date().getTime(),
 		groupBed = db.prepare("SELECT * FROM sleep WHERE groupId = ?").all(groupId);

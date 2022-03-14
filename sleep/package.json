@@ -1,6 +1,10 @@
 {
   "name": "@xiling-bot/sleep",
+<<<<<<< HEAD
   "version": "1.2.15",
+=======
+  "version": "1.2.14",
+>>>>>>> origin/main
   "description": "",
   "main": "index.js",
   "scripts": {
