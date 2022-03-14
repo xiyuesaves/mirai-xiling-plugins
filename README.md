@@ -15,3 +15,4 @@
 - textToSpeech	-	文本转语音
 - wordcloud	-	词云
 - sleep	-	群睡觉
+- holidays -  假期查询
