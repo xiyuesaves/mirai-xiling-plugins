@@ -1,7 +1,9 @@
 // 复读判断模块
 let previousMessage = {}, // 上一条消息
 	ignorant = {}, //  冷却期消息
-	lastMsgId = 0,
+	commend = false,
+	commandPrefix = "",
+	lastMsg = {},
 	timeOut = 2 * 60 * 1000; // 冷却时间
 
 // 判断是否处于冷却期
@@ -38,9 +40,29 @@ function stopWord(replaceText) {
 
 const replace = {
 	name: "复读机",
+	mounted(options) {
+		commandPrefix = new RegExp(`^${options.commandPrefix}`);
+	},
+	priority: {
+		name: "命令检测",
+		exce: (msg) => {
+			let msgs = lastMsg;
+			lastMsg = msg;
+			if (commandPrefix.test(msgs.plain)) {
+				commend = true;
+			} else {
+				commend = false;
+			}
+			return false;
+		}
+	},
 	passive: {
 		name: "复读机",
 		exce: (msg) => {
+			// 如果上一条消息是命令,则不触发复读
+			if (commend) {
+				return true;
+			}
 			let groupId = msg.sender.group.id,
 				messageChain = msg.messageChain,
 				replaceText = JSON.stringify(messageChain).replace(/{"type":"Source".+?},|"url":".+?,"/g, "");
