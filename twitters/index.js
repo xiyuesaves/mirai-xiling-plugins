@@ -9,8 +9,8 @@ let subscriptionList = [],
 	commandPrefix = "";
 
 let options = {
-	twiurl = "https://twitter.com/",
-	updateTime = 15 * 60 * 1000
+	twiurl: "https://twitter.com/",
+	updateTime: 15 * 60 * 1000
 }
 
 // 订阅更新
