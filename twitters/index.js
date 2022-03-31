@@ -38,19 +38,23 @@ async function newPost(data, post) {
 	console.log(data);
 	console.log(post);
 	// 构建消息链
-	let msgChain = [{ type: "Plain", text: `\n${data.subscriptionId} ${post.isRetweeted ? "转推" : "发布"}新的推文啦~\n--------------------\n` }],
+	let msgChain = [{ type: "Plain", text: `\n${post.nickname} ${post.isRetweeted ? "转推" : "发布"}新的推文啦~\n--------------------\n` }],
 		subUserList = db.prepare("SELECT * FROM userList WHERE subId = ?").all(data.id),
 		groupLIst = {};
+	// 如果是转推则额外显示转推用户名
+	if (post.isRetweeted) {
+		msgChain.push({ type: "Plain", text: `\n@${post.user}\n` });
+	}
 	// 插入推文内容
 	msgChain.push({ type: "Plain", text: post.plain });
 	post.imgs.forEach(imgUrl => {
 		msgChain.push({ type: "Image", url: imgUrl })
 	});
 	if (post.media) {
-		msgChain.push({ type: "Plain", text: "\n[视频信息]请在客户端内打开查看" })
+		msgChain.push({ type: "Plain", text: "\n[媒体文件]请在客户端查看" })
 	}
 	if (post.quote) {
-		msgChain.push({ type: "Plain", text: "\n[引用推文]请在客户端内打开查看" })
+		msgChain.push({ type: "Plain", text: "\n[引用推文]请在客户端查看" })
 	}
 	// 根据群分类
 	subUserList.forEach(el => {
@@ -87,8 +91,9 @@ async function getNewPost(id, showNum = 1) {
 					plain: els.find(".tweet-text").prop('firstChild').nodeValue,
 					imgs: getImgSrc(els),
 					isRetweeted: els.find(".tweet-context.with-icn").text().includes("Retweeted"),
+					nickname: $(".ProfileHeaderCard-nameLink").text(),
 					user: els.find(".fullname").text(),
-					media: els.find(".content .AdaptiveMediaOuterContainer").length ? true : false,
+					media: els.find(".content .is-video").length ? true : false,
 					quote: els.find(".content .QuoteTweet").length ? true : false,
 					releaseDate: els.find("[data-time-ms]").attr("data-time-ms")
 				}

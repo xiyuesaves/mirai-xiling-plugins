@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/twitters",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "xiling-bot的推特订阅插件",
   "main": "index.js",
   "scripts": {
