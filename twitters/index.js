@@ -7,7 +7,8 @@ const db = require("better-sqlite3")(join(process.cwd(), "database/twitters.db")
 
 let subscriptionList = [],
 	bot = null,
-	commandPrefix = "";
+	commandPrefix = "",
+	devId = 0;
 
 let options = {
 	twiurl: "https://twitter.com/",
@@ -38,12 +39,12 @@ async function newPost(data, post) {
 	console.log(data);
 	console.log(post);
 	// 构建消息链
-	let msgChain = [{ type: "Plain", text: `\n${post.nickname} ${post.isRetweeted ? "转推" : "发布"}新的推文啦~\n--------------------\n` }],
+	let msgChain = [{ type: "Plain", text: `${post.nickname} ${post.isRetweeted ? "转推" : "发布"}新的推文啦~\n--------------------\n` }],
 		subUserList = db.prepare("SELECT * FROM userList WHERE subId = ?").all(data.id),
 		groupLIst = {};
 	// 如果是转推则额外显示转推用户名
 	if (post.isRetweeted) {
-		msgChain.push({ type: "Plain", text: `\n@${post.user}\n` });
+		msgChain.push({ type: "Plain", text: `@${post.user}\n` });
 	}
 	// 插入推文内容
 	msgChain.push({ type: "Plain", text: post.plain });
@@ -68,7 +69,7 @@ async function newPost(data, post) {
 	for (const groupId in groupLIst) {
 		let newMsgs = msgChain.map(el => el);
 		groupLIst[groupId].forEach(el => {
-			newMsgs.unshift({ type: "At", target: el });
+			newMsgs.unshift({ type: "At", target: el },{ type: "Plain", text: `\n`});
 		});
 		await bot.sendGroupMessage(newMsgs, groupId);
 	}
@@ -155,6 +156,18 @@ function delSubscription(name, msg) {
 	}
 }
 
+// 管理员删除订阅
+function delAllSubscription(name, msg) {
+		checkData = db.prepare("SELECT * FROM subscription a, userList b WHERE a.id = b.subId AND a.subscriptionId = ? ").get(name);
+	if (checkData) {
+		db.prepare("DELETE FROM userList WHERE subId = ?").run(checkData.subId);
+		db.prepare("DELETE FROM subscription WHERE id = ?").run(checkData.subId);
+		msg.quoteReply(`已删除此id的所有订阅信息`);
+	} else {
+		msg.quoteReply("没有此id的订阅信息");
+	}
+}
+
 // 添加订阅
 async function addSubscription(name, msg) {
 	let userId = msg.sender.id,
@@ -188,10 +201,11 @@ const twitters = {
 		try {
 			options = require(join(process.cwd(), "./options/twitters.json"))
 		} catch (err) {
-			console.log("[mc] 需要初始化服务器信息")
+			console.log("[twitter] 初始化配置信息")
 			fs.writeFileSync(join(process.cwd(), "./options/twitters.json"), JSON.stringify(options, null, 4));
 		}
 		commandPrefix = xilingOption.commandPrefix;
+		devId = xilingOption.dev;
 		bot = miraiBot;
 		// 初始化数据库
 		db.prepare(`CREATE TABLE IF NOT EXISTS "subscription" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "subscriptionId" text NOT NULL, "createTime" integer NOT NULL, "lastUpdate" integer NOT NULL);`).run();
@@ -208,7 +222,7 @@ const twitters = {
 					let avatarUrl = await getUserAvatar(parameter[0]);
 					switch (avatarUrl) {
 						case 404:
-							msg.quoteReply("没有找到该用户,请检查id是否正确");
+							msg.quoteReply("无法完成操作");
 							break;
 						case 403:
 							msg.quoteReply("账号异常,无法订阅");
@@ -237,10 +251,18 @@ const twitters = {
 		{
 			name: "删除订阅",
 			exce(msg, parameter) {
-				if (parameter.length !== 1) {
-					msg.reply(`${commandPrefix}删除订阅\n目标id`)
-				} else {
+				if (parameter.length === 1) {
 					delSubscription(parameter[0], msg);
+				} else if (parameter.length === 2) {
+					if (parameter[1] === "强制") {
+						if (msg.sender.id === devId) {
+							delAllSubscription(parameter[0], msg);
+						} else {
+							msg.quoteReply(`你没有权限`);
+						}
+					}
+				} else {
+					msg.quoteReply(`${commandPrefix}删除订阅\n目标id`)
 				}
 			}
 		}
