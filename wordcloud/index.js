@@ -6,24 +6,12 @@ const { join } = require('path');
 const db = require("better-sqlite3")(join(process.cwd(), "database/wordcloud.db"));
 const { registerFont, createCanvas, loadImage } = require('canvas');
 
-const fontList = [
-    './assets/ZCOOLKuaiLe-Regular.ttf',
-    './assets/ZCOOLXiaoWei-Regular.ttf',
-    './assets/ZCOOLQingKeHuangYou-Regular.ttf'
-]
-
-let fontName = [];
-
-fontList.forEach((fontPath, index) => {
-    let name = `font${index}`;
-    registerFont(join(__dirname, fontPath), { family: name });
-    fontName.push(name);
-})
+registerFont(join(__dirname, './assets/ZCOOLQingKeHuangYou-Regular.ttf'), { family: 'ZCOOLQingKeHuangYou' });
 
 let bot = null,
     working = false,
     limitingArr = [],
-    stopwords = ["新版手机", "暂不支持", "视频短片", "chingchong"];
+    stopwords = ["新版手机", "暂不支持", "视频", "chingchong"];
 
 // 防抖算法,阻止刷词
 function limiting(groupId, str, time) {
@@ -57,20 +45,13 @@ function limiting(groupId, str, time) {
 function stopWords(str) {
     let isOk = true;
     for (var i = 0; i < stopwords.length; i++) {
-        if (stopwords[i].includes(stops)) {
-            console.log("[词云] 消息含有停止词", stops);
+        if (str.includes(stopwords[i])) {
+            console.log("[词云] 消息含有停止词", stopwords[i]);
             isOk = false;
             break;
         }
     }
     return isOk;
-}
-
-// 获取随机字体
-function getFonts() {
-    let name = "";
-    name = fontName[Math.floor(Math.random() * fontName.length)];
-    return name;
 }
 
 // 从中国色中随机选择位置顺序获取颜色
@@ -125,8 +106,8 @@ const wordcloud = {
             }
             const cloadwidth = 1024,
                 cloadHeight = 1024,
-                padding = 10,
-                canvas = createCanvas(cloadwidth, cloadHeight);
+                padding = 10;
+            let cloudCanvas = createCanvas(cloadwidth, cloadHeight);
 
             let groupId = msg.sender.group.id,
                 endTime = new Date().getTime(),
@@ -173,18 +154,20 @@ const wordcloud = {
                 weightFactor: weight,
                 shape: "square",
                 ellipticity: 1, // 变形范围
-                fontFamily: getFonts(),
+                fontFamily: "ZCOOLQingKeHuangYou",
                 shrinkToFit: true // 将过大的词组缩放后放入
             };
             // 生成词云
-            await node_wordcloud(canvas, option, createCanvas);
-            const newImage = createCanvas(cloadwidth + padding * 2, cloadHeight + padding * 2);
+            await node_wordcloud(cloudCanvas, option, createCanvas);
+            let newImage = createCanvas(cloadwidth + padding * 2, cloadHeight + padding * 2);
             const sendImage = newImage.getContext('2d');
             sendImage.fillStyle = "#ffffff";
             sendImage.fillRect(0, 0, newImage.width, newImage.height);
-            loadImage(canvas.toBuffer("image/png")).then(async (image) => {
+            loadImage(cloudCanvas.toBuffer("image/png")).then(async (image) => {
                 sendImage.drawImage(image, padding, padding);
                 await bot.sendImageMessage(newImage.toBuffer("image/png"), msg);
+                cloudCanvas = null;
+                newImage = null;
                 working = false;
             })
         }
