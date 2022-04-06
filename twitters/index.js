@@ -12,6 +12,8 @@ let subscriptionList = [],
 
 let options = {
 	twiurl: "https://twitter.com/",
+	absurl: "abs.twimg.com",
+	pbsurl: "pbs.twimg.com",
 	updateTime: 15 * 60 * 1000
 }
 
@@ -49,14 +51,15 @@ async function newPost(data, post) {
 	// 插入推文内容
 	msgChain.push({ type: "Plain", text: post.plain });
 	post.imgs.forEach(imgUrl => {
-		msgChain.push({ type: "Image", url: imgUrl })
+		msgChain.push({ type: "Image", url: imgUrl.replace(/pbs\.twimg\.com/g,options.pbsurl) });
 	});
 	if (post.media) {
-		msgChain.push({ type: "Plain", text: "\n[媒体文件]请在客户端查看" })
+		msgChain.push({ type: "Plain", text: "\n[媒体文件]请在客户端查看" });
 	}
 	if (post.quote) {
-		msgChain.push({ type: "Plain", text: "\n[引用推文]请在客户端查看" })
+		msgChain.push({ type: "Plain", text: "\n[引用推文]请在客户端查看" });
 	}
+	msgChain.push({ type: "Plain", text: `\n原文地址:${post.raw}` });
 	// 根据群分类
 	subUserList.forEach(el => {
 		if (groupLIst[el.groupId]) {
@@ -87,16 +90,17 @@ async function getNewPost(id, showNum = 1) {
 			loopNum = showNum > postNum ? postNum : showNum,
 			postList = [];
 		for (var i = 0; i < loopNum; i++) {
-			let els = $(".stream ol .stream-item:not(.js-pinned):eq(0)"),
+			let postEl = $(".stream ol .stream-item:not(.js-pinned):eq(0)"),
 				post = {
-					plain: els.find(".tweet-text").prop('firstChild').nodeValue,
-					imgs: getImgSrc(els),
-					isRetweeted: els.find(".tweet-context.with-icn").text().includes("Retweeted"),
+					plain: postEl.find(".tweet-text").prop('firstChild').nodeValue,
+					imgs: getImgSrc(postEl),
+					isRetweeted: postEl.find(".tweet-context.with-icn").text().includes("Retweeted"),
 					nickname: $(".ProfileHeaderCard-nameLink").text(),
-					user: els.find(".fullname").text(),
-					media: els.find(".content .is-video").length ? true : false,
-					quote: els.find(".content .QuoteTweet").length ? true : false,
-					releaseDate: els.find("[data-time-ms]").attr("data-time-ms")
+					user: postEl.find(".fullname").text(),
+					media: !!postEl.find(".content .is-video").length,
+					quote: !!postEl.find(".content .QuoteTweet").length,
+					releaseDate: postEl.find("[data-time-ms]").attr("data-time-ms"),
+					raw: "https://www.twitter.com"+postEl.find("[data-permalink-path]").attr("data-permalink-path")
 				}
 			postList.push(post);
 		}
@@ -106,11 +110,11 @@ async function getNewPost(id, showNum = 1) {
 	}
 
 	// 提取图片链接
-	function getImgSrc(els) {
-		let imgEl = els.find(".content .AdaptiveMediaOuterContainer img"),
+	function getImgSrc(postEl) {
+		let imgEl = postEl.find(".content .AdaptiveMediaOuterContainer img"),
 			imgs = [];
 		imgEl.each(function() {
-			imgs.push($(this).attr("src"));
+			imgs.push($(this).attr("src")+"?name=240x240");
 		})
 		return imgs;
 	}
@@ -119,9 +123,10 @@ async function getNewPost(id, showNum = 1) {
 // 获取用户信息
 async function getUserAvatar(userId) {
 	console.log(`正在请求${userId}的主页,${options.twiurl}${userId}`)
-	let htmlStr = await axios.get(`${options.twiurl}${userId}`).catch(err => { return { status: 404 } });
-	if (htmlStr.status === 200) {
-		$ = cheerio.load(htmlStr.data),
+	let req = await axios.get(`${options.twiurl}${userId}`).catch(err => { return { status: 404 } });
+	if (req.status === 200) {
+		let htmlStr = req.data;
+		$ = cheerio.load(htmlStr),
 			url = $(".ProfileCardMini-avatarImage").attr("src"),
 			tws = $("#content-main-heading").text();
 		if (url) {
