@@ -120,14 +120,14 @@ async function getNewPost(id, showNum = 1) {
 	}
 }
 
-// 获取用户信息
+// 获取用户头像
 async function getUserAvatar(userId) {
 	console.log(`正在请求${userId}的主页,${options.twiurl}${userId}`)
 	let req = await axios.get(`${options.twiurl}${userId}`).catch(err => { return { status: 404 } });
 	if (req.status === 200) {
 		let htmlStr = req.data;
 		$ = cheerio.load(htmlStr),
-			url = $(".ProfileCardMini-avatarImage").attr("src"),
+			url = $(".ProfileCardMini-avatarImage").attr("src").replace(/pbs\.twimg\.com/g,options.pbsurl),
 			tws = $("#content-main-heading").text();
 		if (url) {
 			if (tws === "This account's Tweets are protected.") {
