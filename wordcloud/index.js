@@ -5,6 +5,8 @@ const canvas = require("canvas");
 const { join } = require('path');
 const db = require("better-sqlite3")(join(process.cwd(), "database/wordcloud.db"));
 const { registerFont, createCanvas, loadImage } = require('canvas');
+// 子进程功能
+const { fork } = require('child_process');
 
 registerFont(join(__dirname, './assets/ZCOOLQingKeHuangYou-Regular.ttf'), { family: 'ZCOOLQingKeHuangYou' });
 
@@ -118,10 +120,14 @@ const wordcloud = {
                 ins = 0,
                 result = [];
             // 提取单词数组
-            dbSearch.forEach(data => {
-                nodejieba.extract(data.plain, 5).forEach(json => {
-                    result.push(json.word);
-                })
+            await new Promise((res, rej) => {
+                const forked = fork(join(__dirname, '/lib/jieba.js'));
+                forked.send(dbSearch);
+                forked.on('message', (msg) => {
+                    console.log('子进程计算完成', msg);
+                    result = msg;
+                    res();
+                });
             })
             // 数组去重,增加权重
             result.forEach((str, indexs) => {
