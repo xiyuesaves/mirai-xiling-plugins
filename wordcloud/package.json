@@ -1,6 +1,6 @@
 {
   "name": "@xiling-bot/wordcloud",
-  "version": "1.3.0",
+  "version": "1.3.3",
   "description": "xiling-bot的词云插件",
   "main": "index.js",
   "scripts": {
