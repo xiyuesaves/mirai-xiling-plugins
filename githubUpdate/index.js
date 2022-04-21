@@ -55,7 +55,7 @@ const githubUpdate = {
               responseType: "arraybuffer"
             },
             img = await axios(axiosOption),
-            imgId = imgLink[0].imageId;
+            imgId = msg.plain ? `${msg.plain}.${imgLink[0].imageId.split(".")[1]}` : imgLink[0].imageId;
           axios({
             method: "PUT",
             headers: { "Authorization": `token ${options.token}` },
@@ -73,7 +73,7 @@ const githubUpdate = {
           }).catch(err => {
             console.log(err.response.data)
             msg.quoteReply("上传失败");
-            msg.quoteReply(err.response.data);
+            msg.reply(err.response.data);
           })
         } else if (imgLink.length) {
           msg.reply("一次只能上传一张图片");
