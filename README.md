@@ -1,4 +1,12 @@
 # mirai-xiling-plugins
+
+## 安装
+
+所有在此列出的插件均可使用以下命令进行安装
+```
+npm i -S @xiling-bot/<插件名>
+```
+
 #### [mirai-xiling](https://github.com/xiyuesaves/mirai-xiling) 插件列表
 
 - blackList	-	黑名单插件
